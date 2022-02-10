@@ -5,7 +5,7 @@ import secrets
 
 
 def get_top_250_data() -> list[dict]:
-    api_query = f"https://imdb-api.com/en/API/Top250TVs/{secrets.secret_key}"
+    api_query = f"https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8"
     response = requests.get(api_query)
     if response.status_code != 200:  # if we don't get an ok response we have trouble
         print(f"Failed to get data, response code:{response.status_code} and error message: {response.reason} ")
@@ -27,9 +27,9 @@ def report_results(data_to_write: list[dict]):
 def get_ratings(top_show_data: list[dict]) -> list[dict]:
     results = []
     api_queries = []
-    base_query = f"https://imdb-api.com/en/API/UserRatings/{secrets.secret_key}/"
-    wheel_of_time_query = f"{base_query}tt7462410"
-    api_queries.append(wheel_of_time_query)
+    base_query = f"https://imdb-api.com/en/API/UserRatings/k_8rtu00s8/tt1375666"
+    ##wheel_of_time_query = f"{base_query}tt1375666"
+    ##api_queries.append(wheel_of_time_query)
     first_query = f"{base_query}{top_show_data[0]['id']}"
     api_queries.append(first_query)
     fifty_query = f"{base_query}{top_show_data[49]['id']}"
