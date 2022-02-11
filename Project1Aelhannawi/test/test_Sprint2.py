@@ -17,9 +17,10 @@ def test_data_save(get_db):
     # first lets add test data
     conn, cursor = get_db
     main.make_tables(cursor)
-    test_data = [{'items': 'Test id', 'show.title': 'title', 'show.fullTitle': 'fullTitle', 'show.year': 'year',
-                  'show.crew': 'crew',
-                  'show.imDbRating': 'imDbRating', 'show.imDbRatingCount': 'imDbRatingCount'}]
+    test_data = {
+        "items": [{"id": "tt1375666", "rank": "40", "title": "The Office", "fullTitle": "The Office (2005)",
+                   "year": "2005", "crew": " Steve Carell, Jenna Fischer ", "imDbRating": "8.9",
+                   "imDbRatingCount": "515389"}]}
     main.save_data(test_data, cursor)
     main.close_db(conn)
     # test data is saved - now lets see if it is there
@@ -32,4 +33,4 @@ def test_data_save(get_db):
     cursor.execute(''' SELECT title FROM topShow_data''')
     results = cursor.fetchall()
     test_record = results[0]
-    assert test_record[0] == 'Test id'
+    assert test_record[0] == 'items'

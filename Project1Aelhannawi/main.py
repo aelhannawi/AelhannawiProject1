@@ -98,14 +98,14 @@ def make_tables(cursor: sqlite3.Cursor):
 
 
 def save_data(show_data, cursor):
-    for show_datail in show_data:
+    for show_detail in show_data:
         cursor.execute("""
         INSERT INTO topShow_data(id, title, fullTitle,year, crew, imdbRating,
          imdbRatingCount)
          VALUES (?,?,?,?,?,?.?);
-        """, (show_datail['id'], show_datail['title'], show_datail['full.title'],
-              show_datail['year'], show_datail['crew'], show_datail['imDbRating'],
-              show_datail['imDbRatingCount']))
+        """, (show_detail['id'], show_detail['title'], show_detail['full.title'],
+              show_detail['year'], show_detail['crew'], show_detail['imDbRating'],
+              show_detail['imDbRatingCount']))
 
 
 def main():
