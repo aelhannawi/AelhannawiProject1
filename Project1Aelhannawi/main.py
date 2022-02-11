@@ -1,14 +1,14 @@
 import sys
 
 import requests
-import secrets
+##import secrets
 import sqlite3
 from typing import Tuple
 
 
 def get_top_250_data() -> list[dict]:
     all_data = []
-    api_query = f"https://imdb-api.com/en/API/Top250TVs/{secrets.secret_key}"
+    api_query = f"https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8"
     response = requests.get(api_query)
     if response.status_code != 200:  # if we don't get an ok response we have trouble
         print(f"Failed to get data, response code:{response.status_code} and error message: {response.reason} ")
@@ -30,9 +30,9 @@ def report_results(data_to_write: list[dict]):
 def get_ratings(top_show_data: list[dict]) -> list[dict]:
     results = []
     api_queries = []
-    base_query = f"https://imdb-api.com/en/API/UserRatings/{secrets.secret_key}/"
-    wheel_of_time_query = f"{base_query}tt1375666"
-    api_queries.append(wheel_of_time_query)
+    base_query = f"https://imdb-api.com/en/API/UserRatings/k_8rtu00s8/tt1375666"
+    ##wheel_of_time_query = f"{base_query}tt1375666"
+    ##api_queries.append(wheel_of_time_query)
     first_query = f"{base_query}{top_show_data[0]['id']}"
     api_queries.append(first_query)
     fifty_query = f"{base_query}{top_show_data[49]['id']}"
@@ -51,9 +51,10 @@ def get_ratings(top_show_data: list[dict]) -> list[dict]:
     return results
 
 
-def get_data():
-    all_data = []
-    response = requests.get(f"https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8")
+def get_show():
+    show_data = []
+    response = requests.get(
+        f'https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8')
     first_page = response.json()
     if response.status_code != 200:
         print(F"Error Getting Data from API: {response.raw}")
@@ -61,17 +62,17 @@ def get_data():
     total_results = first_page['metadata']['total']
     page = 0
     per_page = first_page['metadata']['per_page']
-    all_data.extend(first_page['results'])
+    show_data.extend(first_page['results'])
     while (page + 1) * per_page < total_results:
         page += 1
         response = requests.get(
-            f"https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8")
+            f'https://imdb-api.com/en/API/Top250TVs/k_8rtu00s8')
         if response.status_code != 200:  # if we didn't get good data keep going
             continue
         current_page = response.json()
-        all_data.extend(current_page['results'])
+        show_data.extend(current_page['results'])
 
-    return all_data
+    return show_data
 
 
 def open_db(filename: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
@@ -86,24 +87,25 @@ def close_db(connection: sqlite3.Connection):
 
 
 def make_tables(cursor: sqlite3.Cursor):
-    cursor.execute('''CREATE TABLE IF NOT EXISTS show_data(
+    cursor.execute('''CREATE TABLE IF NOT EXISTS topShow_data(
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
-    full_title NOT NULL,
+    fullTile  NOT NULL,
+    year INT,
     crew TEXT,
-    IMDbrating INT,
-    IMDbrating_counts INT);''')
+    imdbRating INT,
+    imdbRatingCount INT);''')
 
 
-def save_data(all_data, cursor):
-    for show_data in all_data:
+def save_data(show_data, cursor):
+    for show_datail in show_data:
         cursor.execute("""
-        INSERT INTO show_data(id, title, fulltitle, crew,imDbRating ,
-         imDbRatingCount)
-         VALUES (?,?,?,?,?,?);
-        """, (show_data['id '], show_data['title '], show_data['fulltitle '],
-              show_data['crew '], show_data['imDbRating '],
-              show_data['imDbRatingCount ']))
+        INSERT INTO topShow_data(id, title, fullTitle,year, crew, imdbRating,
+         imdbRatingCount)
+         VALUES (?,?,?,?,?,?.?);
+        """, (show_datail['id'], show_datail['title'], show_datail['full.title'],
+              show_datail['year'], show_datail['crew'], show_datail['imDbRating'],
+              show_datail['imDbRatingCount']))
 
 
 def main():
@@ -111,10 +113,10 @@ def main():
     ratings_data = get_ratings(top_show_data)
     report_results(ratings_data)
     report_results(top_show_data)
-    all_data = get_data()
+    show_data = get_show()
     conn, cursor = open_db("comp490.sqlite")
     make_tables(cursor)
-    save_data(all_data, cursor)
+    save_data(show_data, cursor)
     close_db(conn)
 
 
